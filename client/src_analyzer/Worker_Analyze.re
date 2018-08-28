@@ -82,11 +82,45 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
   open Editor_Types;
   open Toplevel.Types;
 
+  let link:
+    (. Editor_Types.lang, string, array((string, string))) => linkResult =
+    (. lang, name, codeBlocks) => {
+      let filename = name ++ lang->Editor_Types.langToExtension;
+
+      let content: string =
+        Belt.Array.reduce(codeBlocks, "", (a, (_, c)) => a ++ c);
+
+      Evaluator.insertModule(filename, content);
+    };
+
+  exception Link_Error;
+
+  let linkMany:
+    (. Editor_Types.lang, list(Editor_Types.link)) =>
+    list((string, linkResult)) =
+    (. lang, links) => {
+      let rec loop: (list(Editor_Types.link), list) =
+        (links, acc) =>
+          switch (links) {
+          | [] => acc
+          | [singleLink, ...rest] =>
+            let {name, sowas} = singleLink;
+            let result = link(. lang, name, sowas);
+
+            let hasError = Belt.Result.isError(result);
+
+            hasError ?
+              [(name, result), ...acc] :
+              loop(rest, [(name, result), ...acc]);
+          };
+      loop(links, []);
+    };
+
   let executeMany:
     (Editor_Types.lang, list(blockInput)) => list(Toplevel.Types.blockResult) =
     (lang, codeBlocks) => {
       /* Reset before evaluating several blocks */
-      Evaluator.reset();
+      /* Evaluator.reset(); */
 
       switch (lang) {
       | ML => Evaluator.mlSyntax()

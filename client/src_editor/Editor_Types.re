@@ -45,6 +45,10 @@ type forkStatus =
   | ForkStatus_Loading
   | ForkStatus_Error
   | ForkStatus_Done(forkData);
+let langToExtension =
+  fun
+  | ML => ".ml"
+  | RE => ".re";
 
 module Widget = {
   type lineWidgetData =
@@ -91,4 +95,11 @@ module Block = {
     | FcTyp_BlockFocusDown
     /* Shift+Enter shortcut */
     | FcTyp_BlockExecuteAndFocusNextBlock;
+};
+
+type link = {
+  revision_at: string,
+  note_id: string,
+  name: string,
+  blocks: array(Block.block),
 };

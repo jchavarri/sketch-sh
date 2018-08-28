@@ -16,6 +16,9 @@ open Editor_Types;
 
 [@bs.deriving abstract]
 type toplevel = {
+  link:
+    (. Editor_Types.lang, string, array((string, string))) =>
+    Js.Promise.t(Worker_Types.linkResult),
   execute: (. bool, string) => Js.Promise.t(list(Worker_Types.blockData)),
   executeMany:
     (. lang, list((id, string))) =>
@@ -31,3 +34,8 @@ let toplevel: toplevel = Comlink.comlink->(Comlink.proxy(worker));
 let execute = toplevel->executeGet;
 let executeMany = toplevel->executeManyGet;
 let refmtMany = toplevel->refmtManyGet;
+
+let reToMl = toplevel->reToMlGet;
+let reToRe = toplevel->reToReGet;
+let mlToRe = toplevel->mlToReGet;
+let link = toplevel->linkGet;
