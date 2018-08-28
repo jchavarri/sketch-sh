@@ -24,11 +24,11 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
     let noteId = noteInfo.noteId;
     let noteQuery = GetNoteById.make(~noteId, ());
     <AuthStatus.IsAuthenticated>
-      ...{
+      ...(
            user =>
 
              <GetNoteComponent variables=noteQuery##variables>
-               ...{
+               ...(
                     ({result}) =>
                       switch (result) {
                       | Loading => <Editor_NotePlaceholder />
@@ -40,9 +40,9 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                             arrayFirst(
                               ~empty=<NotFound entity="note" />,
                               ~render=note => {
-                                let (lang, blocks) =
+                                let (lang, links, blocks) =
                                   switch (note##data) {
-                                  | None => (Editor_Types.RE, [||])
+                                  | None => (Editor_Types.RE, [||], [||])
                                   | Some(blocks) =>
                                     blocks->Editor_Json.V1.decode
                                   };
@@ -57,13 +57,14 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                                   ...<Editor_Note
                                        key=noteId
                                        noteOwnerId=note##user_id
-                                       noteLastEdited={Some(note##updated_at)}
+                                       noteLastEdited=(Some(note##updated_at))
                                        noteId
                                        noteState=NoteState_Old
-                                       title=?{note##title}
+                                       title=?(note##title)
                                        lang
+                                       links
                                        blocks
-                                       forkFrom=?{note##fork_from}
+                                       forkFrom=?(note##fork_from)
                                        hasSavePermission
                                      />
                                 </RedirectSketchURL>;
@@ -72,9 +73,10 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                           );
                       }
 
-                  }
+                  )
+
              </GetNoteComponent>
-         }
+         )
     </AuthStatus.IsAuthenticated>;
   },
 };

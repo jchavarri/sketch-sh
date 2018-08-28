@@ -33,6 +33,7 @@ module Types = {
 
     type refmtManyResult = list((Editor_Types.id, string, option(error)));
   };
+
   type linkResult = Belt.Result.t(bool, exn);
 };
 
