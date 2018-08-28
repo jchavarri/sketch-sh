@@ -34,6 +34,7 @@ let obj = {
       }
     ),
   "link": Analyze.link,
+  "linkMany": Analyze.linkMany,
 };
 
 Comlink.(comlink->(expose(obj, Worker.self)));

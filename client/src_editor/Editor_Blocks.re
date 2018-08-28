@@ -556,7 +556,7 @@ let blockControlsButtons = (blockId, isDeleted, send) =>
       ...<button
            className="block__controls--button"
            ariaLabel="Add code block"
-           onClick={_ => send(Block_Add(blockId, BTyp_Code))}>
+           onClick=(_ => send(Block_Add(blockId, BTyp_Code)))>
            <Fi.Code />
            <sup> "+"->str </sup>
          </button>
@@ -565,18 +565,18 @@ let blockControlsButtons = (blockId, isDeleted, send) =>
       ...<button
            className="block__controls--button"
            ariaLabel="Add text block"
-           onClick={_ => send(Block_Add(blockId, BTyp_Text))}>
+           onClick=(_ => send(Block_Add(blockId, BTyp_Text)))>
            <Fi.Edit2 />
            <sup> "+"->str </sup>
          </button>
     </UI_Balloon>
-    {
+    (
       !isDeleted ?
         <UI_Balloon message="Delete block" position=Down>
           ...<button
                className="block__controls--button block__controls--danger"
                ariaLabel="Delete block"
-               onClick={_ => send(Block_QueueDelete(blockId))}>
+               onClick=(_ => send(Block_QueueDelete(blockId)))>
                <Fi.Trash2 />
                <sup> "-"->str </sup>
              </button>
@@ -585,12 +585,12 @@ let blockControlsButtons = (blockId, isDeleted, send) =>
           ...<button
                className="block__controls--button"
                ariaLabel="Restore block"
-               onClick={_ => send(Block_Restore(blockId))}>
+               onClick=(_ => send(Block_Restore(blockId)))>
                <Fi.RefreshCw />
                <sup> "+"->str </sup>
              </button>
         </UI_Balloon>
-    }
+    )
   </div>;
 
 let component = ReasonReact.reducerComponent("Editor_Page");
@@ -602,7 +602,6 @@ let make =
       ~readOnly=false,
       ~onUpdate,
       ~onExecute,
-      ~links: array(link),
       ~registerExecuteCallback=?,
       ~registerShortcut: option(Shortcut.subscribeFun)=?,
       _children: React.childless,
