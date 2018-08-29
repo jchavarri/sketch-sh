@@ -48,6 +48,7 @@
 	border-radius: 0 2px 2px 0;
 }
 
+<<<<<<< HEAD
 .EditorNote__lang input[type="radio"] {
 	border: 0;
 	clip: rect(0px, 0px, 0px, 0px);
@@ -74,6 +75,34 @@
 	&:focus+label {
 		outline: auto 5px -webkit-focus-ring-color;
 	}
+=======
+.EditorNote__lang input[type='radio'] {
+  border: 0;
+  clip: rect(0px, 0px, 0px, 0px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+
+  & + label {
+    cursor: pointer;
+    padding: var(--space1);
+    border: 0;
+    outline: 0;
+    color: var(--c-text-inverse);
+    opacity: 0.2;
+  }
+
+  &:checked + label {
+    opacity: 1;
+  }
+
+  &:focus + label {
+    outline: auto 5px -webkit-focus-ring-color;
+  }
+>>>>>>> add links menu and styles
 }
 
 @keyframes spin {
@@ -98,4 +127,25 @@
 		color: var(--c-text-sub2);
 		margin-left: var(--space1);
 	}
+}
+
+.EditorNote__linkMenu {
+  padding: 0 var(--space3);
+  color: var(--c-text-sub2);
+
+  background: none;
+  border: 0;
+  outline: none;
+  font-weight: 700;
+  transition: color 250ms ease;
+  cursor: pointer;
+  font-size: var(--f5);
+
+  & :hover {
+    color: var(--topbar-c-primary);
+  }
+}
+
+.EditorNote__linkMenu--open {
+  color: var(--topbar-c-primary);
 }
