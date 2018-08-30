@@ -88,15 +88,22 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
       let filename = name ++ Editor_Types.langToExtension(lang);
 
 
-      Evaluator.insertModule(filename, code);
+      switch (lang) {
+      | Editor_Types.ML => Evaluator.mlSyntax()
+      | Editor_Types.RE => Evaluator.reSyntax()
+      };
+
+      Evaluator.insertModule(. filename, code);
     };
 
   exception Not_Implemented;
 
   let linkMany:
-    (. Editor_Types.lang, list(Editor_Types.Link.link)) =>
+    (. list(Editor_Types.Link.link)) =>
     list((Editor_Types.Link.link, linkResult)) =
-    (. lang, links) => {
+    (. links) => {
+      /* Reset before evaluating several blocks */
+      Evaluator.reset();
       open Editor_Types.Link;
       let rec loop = (links, acc) =>
         switch (links) {
@@ -105,7 +112,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
           let (name, result) =
             switch (singleLink) {
             | Internal(internalLink) =>
-              let {name, code} = internalLink;
+              let {lang, name, code} = internalLink;
               let result = link(. lang, name, code);
               (singleLink, result);
             | External(_) => raise(Not_Implemented)

@@ -17,8 +17,10 @@ open Editor_Types;
 [@bs.deriving abstract]
 type toplevel = {
   link:
-    (. Editor_Types.lang, string, array((string, string))) =>
+    (. Editor_Types.lang, string, string) =>
     Js.Promise.t(Worker_Types.linkResult),
+  linkMany:
+    (. list(Editor_Types.Link.link)) => Js.Promise.t(Worker_Types.linkResult),
   execute: (. bool, string) => Js.Promise.t(list(Worker_Types.blockData)),
   executeMany:
     (. lang, list((id, string))) =>
@@ -39,3 +41,4 @@ let reToMl = toplevel->reToMlGet;
 let reToRe = toplevel->reToReGet;
 let mlToRe = toplevel->mlToReGet;
 let link = toplevel->linkGet;
+let linkMany = toplevel->linkManyGet;
