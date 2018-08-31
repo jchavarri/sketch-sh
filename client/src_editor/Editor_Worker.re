@@ -18,15 +18,13 @@ type toplevel = {
   executeMany:
     (. Editor_Types.lang, list((string, string))) =>
     Js.Promise.t(list((string, list(Worker_Types.blockData)))),
-  reToMl:
-    (. string) =>
-    Js.Promise.t(Belt.Result.t(string, Worker_Evaluator.Types.Refmt.error)),
-  reToRe:
-    (. string) =>
-    Js.Promise.t(Belt.Result.t(string, Worker_Evaluator.Types.Refmt.error)),
-  mlToRe:
-    (. string) =>
-    Js.Promise.t(Belt.Result.t(string, Worker_Evaluator.Types.Refmt.error)),
+  codeFormat:
+    (. string, list((string, string))) =>
+    Js.Promise.t(
+      list(
+        (string, Belt.Result.t(string, Worker_Evaluator.Types.Refmt.error)),
+      ),
+    ),
 };
 let worker = ToplevelWorker.make();
 let toplevel: toplevel = Comlink.comlink->(Comlink.proxy(worker));
@@ -34,6 +32,7 @@ let toplevel: toplevel = Comlink.comlink->(Comlink.proxy(worker));
 let execute = toplevel->executeGet;
 let executeMany = toplevel->executeManyGet;
 
-let reToMl = toplevel->reToMlGet;
-let reToRe = toplevel->reToReGet;
-let mlToRe = toplevel->mlToReGet;
+let codeFormat = toplevel->codeFormatGet;
+let reToMl = (. code) => codeFormat(. "reToMl", code);
+let reToRe = (. code) => codeFormat(. "reToRe", code);
+let mlToRe = (. code) => codeFormat(. "mlToRe", code);
