@@ -26,12 +26,8 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
     <AuthStatus.IsAuthenticated>
       ...(
            user =>
-<<<<<<< HEAD
 
-             <GetNoteComponent variables=noteQuery##variables>
-=======
              <GetNoteByIdComponent variables=noteQuery##variables>
->>>>>>> checkout files
                ...(
                     ({result}) =>
                       switch (result) {
@@ -77,12 +73,8 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                       }
 
                   )
-<<<<<<< HEAD
 
-             </GetNoteComponent>
-=======
              </GetNoteByIdComponent>
->>>>>>> checkout files
          )
     </AuthStatus.IsAuthenticated>;
   },
