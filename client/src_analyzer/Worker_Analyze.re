@@ -87,13 +87,22 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
     (. lang, name, code) => {
       let filename = name ++ Editor_Types.langToExtension(lang);
 
-
+      open Evaluator;
       switch (lang) {
-      | Editor_Types.ML => Evaluator.mlSyntax()
-      | Editor_Types.RE => Evaluator.reSyntax()
+      | ML => mlSyntax()
+      | RE => reSyntax()
       };
 
-      Evaluator.insertModule(. filename, code);
+      let lang = lang->langToString->String.lowercase;
+
+      let js_linkResult = insertModule(. name, code, lang);
+      Belt.Result.(
+        switch (js_linkResult->LinkResult.kindGet) {
+        | "Ok" => Ok()
+        | "Error" => Error(js_linkResult->LinkResult.valueGet)
+        | kind => raise(Invalid_argument("Unknown link result " ++ kind))
+        }
+      );
     };
 
   exception Not_Implemented;
@@ -114,6 +123,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
             | Internal(internalLink) =>
               let {lang, name, code} = internalLink;
               let result = link(. lang, name, code);
+
               (singleLink, result);
             | External(_) => raise(Not_Implemented)
             };
