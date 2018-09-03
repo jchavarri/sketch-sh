@@ -26,8 +26,12 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
     <AuthStatus.IsAuthenticated>
       ...(
            user =>
+<<<<<<< HEAD
 
              <GetNoteComponent variables=noteQuery##variables>
+=======
+             <GetNoteByIdComponent variables=noteQuery##variables>
+>>>>>>> checkout files
                ...(
                     ({result}) =>
                       switch (result) {
@@ -40,10 +44,11 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                             arrayFirst(
                               ~empty=<NotFound entity="note" />,
                               ~render=note => {
-                                let (lang, links, blocks) =
+                                let (lang, blocks) =
                                   switch (note##data) {
-                                  | None => (Editor_Types.RE, [||], [||])
-                                  | Some(data) => data->Editor_Json.V1.decode
+                                  | None => (Editor_Types.RE, [||])
+                                  | Some(blocks) =>
+                                    blocks->Editor_Json.V1.decode
                                   };
                                 let hasSavePermission =
                                   switch (user) {
@@ -61,7 +66,6 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                                        noteState=NoteState_Old
                                        title=?(note##title)
                                        lang
-                                       links
                                        blocks
                                        forkFrom=?(note##fork_from)
                                        hasSavePermission
@@ -73,8 +77,12 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                       }
 
                   )
+<<<<<<< HEAD
 
              </GetNoteComponent>
+=======
+             </GetNoteByIdComponent>
+>>>>>>> checkout files
          )
     </AuthStatus.IsAuthenticated>;
   },
