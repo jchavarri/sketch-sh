@@ -235,7 +235,7 @@ module Editor_Note = {
                            state.title,
                            Editor_Json.V1.encode(
                              state.lang,
-                             state.link^,
+                             state.links^,
                              state.blocks^,
                            ),
                          )
@@ -255,7 +255,7 @@ module Editor_Note = {
                            state.title,
                            Editor_Json.V1.encode(
                              state.lang,
-                             state.link^,
+                             state.links^,
                              state.blocks^,
                            ),
                          )
