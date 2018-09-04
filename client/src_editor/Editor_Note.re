@@ -12,7 +12,7 @@ module Editor_Note = {
     lang,
     title: string,
     isLinkMenuOpen: bool,
-    links: ref(array(Link.link)),
+    links: array(Link.link),
     blocks: ref(array(Block.block)),
     editorContentStatus,
     executeCallback: option(unit => unit),
@@ -60,7 +60,7 @@ module Editor_Note = {
       title: initialTitle,
       editorContentStatus: Ec_Pristine,
       isLinkMenuOpen: false,
-      links: ref(initialLinks),
+      links: initialLinks,
       blocks: ref(initialBlocks),
       executeCallback: None,
       noteOwnerId: initialNoteOwnerId,
@@ -116,8 +116,7 @@ module Editor_Note = {
             isLinkMenuOpen: !state.isLinkMenuOpen,
           })
         | LinkUpdate(links) =>
-          state.links := links;
-          ReasonReact.Update({...state, editorContentStatus: Ec_Dirty});
+          ReasonReact.Update({...state, links, editorContentStatus: Ec_Dirty})
         | BlockUpdate(blocks) =>
           state.blocks := blocks;
           ReasonReact.Update({...state, editorContentStatus: Ec_Dirty});
@@ -235,7 +234,7 @@ module Editor_Note = {
                            state.title,
                            Editor_Json.V1.encode(
                              state.lang,
-                             state.links^,
+                             state.links,
                              state.blocks^,
                            ),
                          )
@@ -255,7 +254,7 @@ module Editor_Note = {
                            state.title,
                            Editor_Json.V1.encode(
                              state.lang,
-                             state.links^,
+                             state.links,
                              state.blocks^,
                            ),
                          )
@@ -361,9 +360,9 @@ module Editor_Note = {
               state.isLinkMenuOpen ?
                 <Editor_Links
                   key=(
-                    state.noteId ++ string_of_int(Array.length(state.links^))
+                    state.noteId ++ string_of_int(Array.length(state.links))
                   )
-                  links=state.links^
+                  links=state.links
                   onUpdate=(links => send(LinkUpdate(links)))
                 /> :
                 ReasonReact.null
@@ -372,7 +371,7 @@ module Editor_Note = {
               key=state.noteId
               lang
               blocks=state.blocks^
-              links=state.links^
+              links=state.links
               registerExecuteCallback=(
                 callback => send(RegisterExecuteCallback(callback))
               )
