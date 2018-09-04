@@ -49,6 +49,9 @@ context("linking sketches", () => {
     cy.get(".link__input")
       .eq(1)
       .type("Awesome");
+    cy.get(".link__button")
+      .first()
+      .click();
     typeBlock(0, "include Awesome;");
     shortcut("{ctrl}{enter}");
     assertErrorsOrWarnings(0);
