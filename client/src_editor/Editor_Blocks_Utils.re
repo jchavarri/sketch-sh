@@ -236,3 +236,12 @@ let concatCodeBlocksToString = blocks =>
         }
       )
     );
+exception Not_Implemented;
+
+let getNameFromLink = link =>
+  Editor_Types.Link.(
+    switch (link) {
+    | Internal(internalLink) => internalLink.name
+    | External () => raise(Not_Implemented)
+    }
+  );
