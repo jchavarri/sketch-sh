@@ -11,6 +11,8 @@ module Editor_Note = {
     noteState,
     lang,
     title: string,
+    isLinkMenuOpen: bool,
+    links: ref(array(Link.link)),
     blocks: ref(array(Block.block)),
     editorContentStatus,
     executeCallback: option(unit => unit),
@@ -22,6 +24,8 @@ module Editor_Note = {
 
   type action =
     | TitleUpdate(string)
+    | ToggleLinkMenu
+    | LinkUpdate(array(Link.link))
     | BlockUpdate(array(Block.block))
     | RegisterExecuteCallback(unit => unit)
     | UpdateNoteSaveStatus(saveStatus)
@@ -40,6 +44,7 @@ module Editor_Note = {
         ~initialNoteState: noteState,
         ~initialLang: lang=RE,
         ~initialTitle: string="",
+        ~initialLinks: array(Link.link),
         ~initialBlocks: array(Block.block),
         ~initialNoteOwnerId: id,
         ~initialNoteLastEdited: option(Js.Json.t),
@@ -54,6 +59,8 @@ module Editor_Note = {
       lang: initialLang,
       title: initialTitle,
       editorContentStatus: Ec_Pristine,
+      isLinkMenuOpen: false,
+      links: ref(initialLinks),
       blocks: ref(initialBlocks),
       executeCallback: None,
       noteOwnerId: initialNoteOwnerId,
@@ -103,6 +110,14 @@ module Editor_Note = {
                 }
             ),
           )
+        | ToggleLinkMenu =>
+          ReasonReact.Update({
+            ...state,
+            isLinkMenuOpen: !state.isLinkMenuOpen,
+          })
+        | LinkUpdate(links) =>
+          state.links := links;
+          ReasonReact.Update({...state, editorContentStatus: Ec_Dirty});
         | BlockUpdate(blocks) =>
           state.blocks := blocks;
           ReasonReact.Update({...state, editorContentStatus: Ec_Dirty});
@@ -218,7 +233,11 @@ module Editor_Note = {
                        getCurrentData=(
                          () => (
                            state.title,
-                           Editor_Json.V1.encode(state.lang, state.blocks^),
+                           Editor_Json.V1.encode(
+                             state.lang,
+                             state.link^,
+                             state.blocks^,
+                           ),
                          )
                        )
                        registerShortcut
@@ -234,7 +253,11 @@ module Editor_Note = {
                        getCurrentData=(
                          () => (
                            state.title,
-                           Editor_Json.V1.encode(state.lang, state.blocks^),
+                           Editor_Json.V1.encode(
+                             state.lang,
+                             state.link^,
+                             state.blocks^,
+                           ),
                          )
                        )
                        className=buttonClassName
@@ -304,6 +327,19 @@ module Editor_Note = {
                          />
                      )
                 </Editor_Note_GetUserInfo>
+                <UI_Balloon position=Down message="Link sketches">
+                  ...<button
+                       className=(
+                         ClassNames.make([
+                           "EditorNote__linkMenu",
+                           state.isLinkMenuOpen
+                           ->ClassNames.ifTrue("EditorNote__linkMenu--open"),
+                         ])
+                       )
+                       onClick=(_ => send(ToggleLinkMenu))>
+                       <Fi.Link />
+                     </button>
+                </UI_Balloon>
               </div>
               (
                 state.forkFrom
@@ -321,10 +357,22 @@ module Editor_Note = {
                 )
               )
             </div>
+            (
+              state.isLinkMenuOpen ?
+                <Editor_Links
+                  key=(
+                    state.noteId ++ string_of_int(Array.length(state.links^))
+                  )
+                  links=state.links^
+                  onUpdate=(links => send(LinkUpdate(links)))
+                /> :
+                ReasonReact.null
+            )
             <Editor_Blocks
               key=state.noteId
               lang
               blocks=state.blocks^
+              links=state.links^
               registerExecuteCallback=(
                 callback => send(RegisterExecuteCallback(callback))
               )
@@ -349,6 +397,7 @@ module WithShortcut = {
         ~noteState,
         ~lang=?,
         ~title=?,
+        ~links,
         ~blocks,
         ~noteOwnerId,
         ~noteLastEdited,
@@ -366,6 +415,7 @@ module WithShortcut = {
                  initialNoteState=noteState
                  initialLang=?lang
                  initialTitle=?title
+                 initialLinks=links
                  initialBlocks=blocks
                  initialNoteOwnerId=noteOwnerId
                  initialNoteLastEdited=noteLastEdited
