@@ -194,6 +194,7 @@ let make = (~links, ~onUpdate, _children) => {
                    switch (result) {
                    | Loading =>
                      <EmptyLink
+                       key="loading"
                        status=Loading
                        id
                        name
@@ -201,6 +202,7 @@ let make = (~links, ~onUpdate, _children) => {
                      />
                    | Error(_error) =>
                      <EmptyLink
+                       key="error"
                        status=Error
                        id
                        name
@@ -229,6 +231,7 @@ let make = (~links, ~onUpdate, _children) => {
                        });
 
                      <EmptyLink
+                       key="fetched"
                        status=Fetched
                        id
                        name
