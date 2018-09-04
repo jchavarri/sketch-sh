@@ -83,7 +83,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
 
   open Editor_Types;
   open Toplevel.Types;
-  
+
   let executeMany:
     (Editor_Types.lang, list(blockInput)) => list(Toplevel.Types.blockResult) =
     (lang, codeBlocks) => {
@@ -91,6 +91,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
       Evaluator.reset();
 
       switch (lang) {
+        
       | ML => Evaluator.mlSyntax()
       | RE => Evaluator.reSyntax()
       };

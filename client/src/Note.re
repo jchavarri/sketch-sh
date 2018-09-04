@@ -42,9 +42,8 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                               ~render=note => {
                                 let (lang, blocks) =
                                   switch (note##data) {
-                                  | None => (Editor_Types.RE, [||])
-                                  | Some(blocks) =>
-                                    blocks->Editor_Json.V1.decode
+                                  | None => (Editor_Types.RE, [||], [||])
+                                  | Some(data) => data->Editor_Json.V1.decode
                                   };
                                 let hasSavePermission =
                                   switch (user) {
