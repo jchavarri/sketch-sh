@@ -48,7 +48,6 @@
 	border-radius: 0 2px 2px 0;
 }
 
-<<<<<<< HEAD
 .EditorNote__lang input[type="radio"] {
 	border: 0;
 	clip: rect(0px, 0px, 0px, 0px);
@@ -75,34 +74,6 @@
 	&:focus+label {
 		outline: auto 5px -webkit-focus-ring-color;
 	}
-=======
-.EditorNote__lang input[type='radio'] {
-  border: 0;
-  clip: rect(0px, 0px, 0px, 0px);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-
-  & + label {
-    cursor: pointer;
-    padding: var(--space1);
-    border: 0;
-    outline: 0;
-    color: var(--c-text-inverse);
-    opacity: 0.2;
-  }
-
-  &:checked + label {
-    opacity: 1;
-  }
-
-  &:focus + label {
-    outline: auto 5px -webkit-focus-ring-color;
-  }
->>>>>>> add links menu and styles
 }
 
 @keyframes spin {
