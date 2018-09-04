@@ -79,8 +79,6 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
       loop(0, [], None);
     };
 
-
-
   open Editor_Types;
   open Toplevel.Types;
 
@@ -88,10 +86,9 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
     (Editor_Types.lang, list(blockInput)) => list(Toplevel.Types.blockResult) =
     (lang, codeBlocks) => {
       /* Reset before evaluating several blocks */
-      Evaluator.reset();
+      /* Evaluator.reset(); */
 
       switch (lang) {
-        
       | ML => Evaluator.mlSyntax()
       | RE => Evaluator.reSyntax()
       };
@@ -120,8 +117,8 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
       | ML => mlSyntax()
       | RE => reSyntax()
       };
-       let lang = lang->langToString->String.lowercase;
-       let js_linkResult = insertModule(. name, code, lang);
+      let lang = lang->langToString->String.lowercase;
+      let js_linkResult = insertModule(. name, code, lang);
       Belt.Result.(
         switch (js_linkResult->LinkResult.kindGet) {
         | "Ok" => Ok()
@@ -130,13 +127,13 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
         }
       );
     };
-   exception Not_Implemented;
-   let linkMany: (. list(Link.link)) => list((Link.link, linkResult)) =
+  exception Not_Implemented;
+  let linkMany: (. list(Link.link)) => list((Link.link, linkResult)) =
     (. links) => {
       /* Reset before evaluating several blocks */
       Evaluator.reset();
       open Link;
-       let rec loop = (links, acc) =>
+      let rec loop = (links, acc) =>
         switch (links) {
         | [] => acc
         | [singleLink, ...rest] =>
@@ -145,11 +142,11 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
             | Internal(internalLink) =>
               let {lang, name, code} = internalLink;
               let result = link(. lang, name, code);
-               (singleLink, result);
+              (singleLink, result);
             | External(_) => raise(Not_Implemented)
             };
-           let hasError = Belt.Result.isError(result);
-           hasError ?
+          let hasError = Belt.Result.isError(result);
+          hasError ?
             [(name, result), ...acc] :
             loop(rest, [(name, result), ...acc]);
         };
