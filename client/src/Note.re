@@ -26,7 +26,6 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
     <AuthStatus.IsAuthenticated>
       ...(
            user =>
-
              <GetNoteByIdComponent variables=noteQuery##variables>
                ...(
                     ({result}) =>
@@ -40,7 +39,7 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                             arrayFirst(
                               ~empty=<NotFound entity="note" />,
                               ~render=note => {
-                                let (lang, blocks) =
+                                let (lang, links, blocks) =
                                   switch (note##data) {
                                   | None => (Editor_Types.RE, [||], [||])
                                   | Some(data) => data->Editor_Json.V1.decode
@@ -61,6 +60,7 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                                        noteState=NoteState_Old
                                        title=?(note##title)
                                        lang
+                                       links
                                        blocks
                                        forkFrom=?(note##fork_from)
                                        hasSavePermission
@@ -70,9 +70,7 @@ let make = (~noteInfo: Route.noteRouteConfig, _children: React.childless) => {
                             )
                           );
                       }
-
                   )
-
              </GetNoteByIdComponent>
          )
     </AuthStatus.IsAuthenticated>;
