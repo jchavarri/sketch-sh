@@ -404,20 +404,26 @@ let make = (~currentSketchId, ~links, ~onUpdate, _children) => {
     <>
       <br />
       <span id="linkedLists" className="UI_SketchOwnerInfo__username">
-        {str("Linked Links")}
+        {str("Linked Sketches")}
       </span>
-      <UI_Balloon position=Down message="Edit sketches">
+      <UI_Balloon position=Down message="Edit linked sketches">
         ...<button
              className="EditorNote__linkMenu"
              onClick={_ => send(ToggleLinkModal)}>
              <Fi.Edit2 />
            </button>
       </UI_Balloon>
-      <hr />
-      <table style=Style.table>
-        <tbody> displayLinks->ReasonReact.array </tbody>
-      </table>
-      <hr />
+      {
+        Array.length(displayLinks) > 0 ?
+          <>
+            <hr />
+            <table style=Style.table>
+              <tbody> displayLinks->ReasonReact.array </tbody>
+            </table>
+            <hr />
+          </> :
+          ReasonReact.null
+      }
       <Reach_Modal.DialogOverlay
         isOpen={state.isLinkModalOpen}
         className="EditorNote__Modal--overlay"
