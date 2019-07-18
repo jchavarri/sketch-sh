@@ -20,6 +20,7 @@ type parse_response = Belt.Result.t(array(parse_success), parse_error);
 let parse: string => parse_response =
   code => {
     let raw_response = parse(code);
+    Js.log(raw_response);
     switch (Array.unsafe_get(raw_response, 0)) {
     | "Ok" => raw_response->Array.unsafe_get(1)->Obj.magic->Ok
     | "Error" => raw_response->Array.unsafe_get(1)->Obj.magic->Error
