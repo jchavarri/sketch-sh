@@ -1,20 +1,59 @@
 type result('a, 'b) = Belt.Result.t('a, 'b) = | Ok('a) | Error('b);
 
-// let result_encode = content => {
-//   switch (Array.unsafe_get(content, 0)) {
-//   | "Ok" => content->Array.unsafe_get(1)->Obj.magic->Ok
-//   | "Error" => content->Array.unsafe_get(1)->Obj.magic->Error
-//   | unknown_constructor =>
-//     failwith({j|Unknown constructor $unknown_constructor|j})
-//   };
-// };
-
-let result_encode = _ => {
-  failwith("Unimplemented");
-};
-let result_decode = _ => {
-  failwith("Unimplemented");
-};
+let result_encode = (encoder_a, encoder_b, v) =>
+  (
+    v =>
+      switch (v) {
+      | Ok(v0) => Js.Json.array([|Js.Json.string("Ok"), encoder_a(v0)|])
+      | Error(v0) =>
+        Js.Json.array([|Js.Json.string("Error"), encoder_b(v0)|])
+      }
+  )(
+    v,
+  )
+and result_decode = (decoder_a, decoder_b, v) =>
+  (
+    v =>
+      switch (Js.Json.classify(v)) {
+      | Js.Json.JSONArray(jsonArr) =>
+        let tagged = Js.Array.map(Js.Json.classify, jsonArr);
+        switch (tagged[0]) {
+        | Js.Json.JSONString("Ok") =>
+          Js.Array.length(tagged) !== 2
+            ? Decco.error(
+                ~path=?None,
+                "Invalid number of arguments to variant constructor",
+                v,
+              )
+            : (
+              switch (decoder_a(jsonArr[1])) {
+              | Belt.Result.Ok(v0) => Belt.Result.Ok(Ok(v0))
+              | Belt.Result.Error((_ as e: Decco.decodeError)) =>
+                Belt.Result.Error({...e, path: "[0]" ++ e.path})
+              }
+            )
+        | Js.Json.JSONString("Error") =>
+          Js.Array.length(tagged) !== 2
+            ? Decco.error(
+                ~path=?None,
+                "Invalid number of arguments to variant constructor",
+                v,
+              )
+            : (
+              switch (decoder_b(jsonArr[1])) {
+              | Belt.Result.Ok(v0) => Belt.Result.Ok(Error(v0))
+              | Belt.Result.Error((_ as e: Decco.decodeError)) =>
+                Belt.Result.Error({...e, path: "[0]" ++ e.path})
+              }
+            )
+        | _ =>
+          Decco.error(~path=?None, "Invalid variant constructor", jsonArr[0])
+        };
+      | _ => Decco.error(~path=?None, "Not a variant", v)
+      }
+  )(
+    v,
+  );
 
 module Types = {
   module Error = {
@@ -88,6 +127,12 @@ module Types = {
       | RE
       | ML;
   };
+};
+
+[@bs.val] external parse: string => Js.Json.t = "parse";
+
+let parse = code => {
+  code->parse->Types.Parse.message_decode;
 };
 
 type js_callback = Js.Json.t => unit;

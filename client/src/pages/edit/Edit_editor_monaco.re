@@ -14,155 +14,24 @@ module S: {
     [background(Color.brand_light2), ...gutter_base]->style;
 };
 
-let get_monaco = (monaco_ref, cb) => {
-  switch (monaco_ref->React.Ref.current->Js.Nullable.toOption) {
-  | None => ()
-  | Some(monaco) => cb(monaco)
-  };
-};
-
 open Edit_state_native;
-module Execute = Engine_native.Types.Execute;
 
 let parse = Debouncer.make(((code, send)) => send(Out_parse(code)));
+
 [@react.component]
 let make = (~value, ~onChange) => {
   let monaco_ref = React.useRef(Js.Nullable.null);
-  let (deco, set_deco) = React.useState(() => [||]);
 
   let (ntv_state, ntv_send) =
     ReactUpdate.useReducer(
       {
         parse_error: None,
-        parse_success: [||],
+        parse_success: [],
         last_executed_line: Some(1),
         exec_msg: Belt.Map.Int.empty,
       },
       reducer,
     );
-  React.useEffect1(
-    () => {
-      open MonacoEditor;
-
-      let markers = ref([]);
-      let value_view = ref([]);
-      let stdout_view = ref([]);
-
-      ntv_state.exec_msg
-      ->Belt.Map.Int.forEach(
-          (
-            _id,
-            {
-              exec_loc,
-              exec_phr_kind,
-              exec_content,
-              exec_warning,
-              exec_stdout,
-            },
-          ) => {
-          switch (exec_content) {
-          | Execute.Exec_phr_exn({loc, message}) =>
-            let loc = loc->Belt.Option.getWithDefault(Loc.dummy_loc);
-
-            let (startLineNumber, startColumn, endLineNumber, endColumn) =
-              Loc.Monaco.to_monaco(loc);
-
-            markers :=
-              [
-                IMarkerData.make(
-                  ~severity=MarkerSeverity.Error,
-                  ~message,
-                  ~startLineNumber,
-                  ~startColumn,
-                  ~endLineNumber,
-                  ~endColumn,
-                  (),
-                ),
-                ...markers^,
-              ];
-          | _ => ()
-          };
-          ();
-        });
-
-      get_monaco(
-        monaco_ref,
-        react_monaco => {
-          let model = react_monaco##editor##getModel();
-
-          monaco##editor##setModelMarkers(
-            model,
-            "refmt",
-            (markers^)->Belt.List.toArray,
-          );
-        },
-      );
-
-      None;
-    },
-    [|ntv_state.exec_msg|],
-  );
-
-  /* Handling gutter status */
-  React.useEffect2(
-    () => {
-      open MonacoEditor;
-      let {executed, parsed_and_executable} =
-        derive_execution_status(
-          ntv_state.parse_success,
-          ntv_state.last_executed_line,
-        );
-
-      let to_range = pair => {
-        IRange.make(
-          ~startLineNumber=fst(pair) + 1,
-          ~startColumn=1,
-          ~endLineNumber=snd(pair) + 1,
-          ~endColumn=1,
-        );
-      };
-      let executed_deco =
-        executed->Belt.Option.map(executed =>
-          IModelDeltaDecoration.make(
-            ~range=to_range(executed),
-            ~options=
-              IModelDecorationOptions.make(
-                ~isWholeLine=true,
-                ~linesDecorationsClassName=S.gutter_executed,
-                (),
-              ),
-          )
-        );
-
-      let parsed_deco =
-        parsed_and_executable->Belt.Option.map(parsed =>
-          IModelDeltaDecoration.make(
-            ~range=to_range(parsed),
-            ~options=
-              IModelDecorationOptions.make(
-                ~isWholeLine=true,
-                ~linesDecorationsClassName=S.gutter_parsed,
-                (),
-              ),
-          )
-        );
-
-      let decorations =
-        [|executed_deco, parsed_deco|]->Belt.Array.keepMap(a => a);
-
-      get_monaco(
-        monaco_ref,
-        react_monaco => {
-          let new_deco =
-            react_monaco##editor##deltaDecorations(deco, decorations);
-          set_deco(_ => new_deco);
-        },
-      );
-
-      None;
-    },
-    (ntv_state.parse_success, ntv_state.last_executed_line),
-  );
 
   /* Parsing the statements on value changes */
   React.useEffect1(
@@ -173,47 +42,35 @@ let make = (~value, ~onChange) => {
     [|value|],
   );
 
-  /* Handling error markers */
-  React.useEffect1(
-    () => {
-      open MonacoEditor;
-      let markers =
-        switch (ntv_state.parse_error) {
-        | None => [||]
-        | Some(err) =>
-          let (startLineNumber, startColumn, endLineNumber, endColumn) =
-            Location.Monaco.to_monaco(err##loc);
+  /* Handling display of execution result */
+  Edit_editor_monaco_hooks.use_exec_result(
+    ~exec_msg=ntv_state.exec_msg,
+    ~monaco_ref,
+  );
 
-          let marker =
-            IMarkerData.make(
-              ~severity=MarkerSeverity.Error,
-              ~message=err##message,
-              ~startLineNumber,
-              ~startColumn,
-              ~endLineNumber,
-              ~endColumn,
-              (),
-            );
-          [|marker|];
-        };
+  /* Handling parsing error markers */
+  Edit_editor_monaco_hooks.use_parse_error(
+    ~parse_error=ntv_state.parse_error,
+    ~monaco_ref,
+  );
 
-      get_monaco(
-        monaco_ref,
-        react_monaco => {
-          let model = react_monaco##editor##getModel();
-
-          monaco##editor##setModelMarkers(model, "refmt", markers);
-        },
-      );
-
-      None;
-    },
-    [|ntv_state.parse_error|],
+  /* Handling gutter status */
+  Edit_editor_monaco_hooks.use_gutter_status(
+    ~parse_success=ntv_state.parse_success,
+    ~last_executed_line=ntv_state.last_executed_line,
+    ~monaco_ref,
+    ~class_gutter_executed=S.gutter_executed,
+    ~class_gutter_parsed=S.gutter_parsed,
   );
 
   <>
     <Ds.Button
-      onClick={_ => ntv_send(Execute(ntv_state.parse_success[0]##id))}>
+      onClick={_ =>
+        switch (ntv_state.parse_success) {
+        | [] => ()
+        | [hd, ..._xs] => ntv_send(Execute(hd.id))
+        }
+      }>
       "Execute all"->React.string
     </Ds.Button>
     <ReactMonacoEditor
@@ -230,7 +87,7 @@ let make = (~value, ~onChange) => {
           Editor_changed(
             event##changes
             ->Belt.Array.map(changes =>
-                Location.Monaco.from_monaco(changes##range)
+                changes##range->Loc.Monaco.from_monaco
               ),
           ),
         );
