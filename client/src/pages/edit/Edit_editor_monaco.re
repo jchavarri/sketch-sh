@@ -63,15 +63,19 @@ let make = (~value, ~onChange) => {
           switch (exec_content) {
           | Execute.Exec_phr_exn({loc, message}) =>
             let loc = loc->Belt.Option.getWithDefault(Loc.dummy_loc);
+
+            let (startLineNumber, startColumn, endLineNumber, endColumn) =
+              Loc.Monaco.to_monaco(loc);
+
             markers :=
               [
                 IMarkerData.make(
                   ~severity=MarkerSeverity.Error,
                   ~message,
-                  ~startLineNumber=Loc.start_line(loc),
-                  ~startColumn=Loc.start_col(loc),
-                  ~endLineNumber=Loc.end_line(loc),
-                  ~endColumn=Loc.end_col(loc),
+                  ~startLineNumber,
+                  ~startColumn,
+                  ~endLineNumber,
+                  ~endColumn,
                   (),
                 ),
                 ...markers^,
