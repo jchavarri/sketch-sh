@@ -64,33 +64,22 @@ let derive_execution_status =
   };
 };
 
-/*
-  Display state:
-  - Rendering gutters
-  - Responses in the right column view
-  - Editor errors/ warnings
-  - Inline widget state
-
-  state shape:
-
-  {
-    gutter_dom: array,
-    errors: list,
-    inline_widget: Belt.Map.Int({ is_display, dom_object });
-  }
- */
+module Execute = Engine_native.Types.Execute;
 
 type state = {
   last_executed_line: option(int),
   parse_error: option(parse_error),
   parse_success: array(parse_success),
+  exec_msg: Belt.Map.Int.t(Execute.message),
 };
 
 type action =
   | Out_parse(string)
   | In_parse(parse_response)
   | Editor_changed(array(loc))
-  | State_reset;
+  | Add_exec_messages(Execute.message)
+  | State_reset
+  | Execute(int);
 
 let reducer = (action, state) => {
   ReactUpdate.(
@@ -137,6 +126,36 @@ let reducer = (action, state) => {
         NoUpdate;
       };
     | State_reset => failwith("Unimplemented")
+    | Add_exec_messages(message) =>
+      Update({
+        ...state,
+        exec_msg:
+          state.exec_msg->Belt.Map.Int.set(message.Execute.exec_id, message),
+      })
+    | Execute(to_id) =>
+      SideEffects(
+        ({send}) => {
+          let complete = _ => ();
+          let js_send = (
+            fun
+            | Ok(message) => send(Add_exec_messages(message))
+            | Error(decco_error) =>
+              Js.log2(
+                "Ooops! Error while decoding value from worker, looks like types is out of sync",
+                decco_error,
+              )
+          );
+
+          Engine_native.execute(
+            ~send={
+              js_send;
+            },
+            ~complete,
+            to_id,
+          );
+          None;
+        },
+      )
     }
   );
 };

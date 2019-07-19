@@ -22,6 +22,7 @@ let get_monaco = (monaco_ref, cb) => {
 };
 
 open Edit_state_native;
+module Execute = Engine_native.Types.Execute;
 
 let parse = Debouncer.make(((code, send)) => send(Out_parse(code)));
 [@react.component]
@@ -31,9 +32,73 @@ let make = (~value, ~onChange) => {
 
   let (ntv_state, ntv_send) =
     ReactUpdate.useReducer(
-      {parse_error: None, parse_success: [||], last_executed_line: Some(1)},
+      {
+        parse_error: None,
+        parse_success: [||],
+        last_executed_line: Some(1),
+        exec_msg: Belt.Map.Int.empty,
+      },
       reducer,
     );
+  React.useEffect1(
+    () => {
+      open MonacoEditor;
+
+      let markers = ref([]);
+      let value_view = ref([]);
+      let stdout_view = ref([]);
+
+      ntv_state.exec_msg
+      ->Belt.Map.Int.forEach(
+          (
+            _id,
+            {
+              exec_loc,
+              exec_phr_kind,
+              exec_content,
+              exec_warning,
+              exec_stdout,
+            },
+          ) => {
+          switch (exec_content) {
+          | Execute.Exec_phr_exn({loc, message}) =>
+            let loc = loc->Belt.Option.getWithDefault(Loc.dummy_loc);
+            markers :=
+              [
+                IMarkerData.make(
+                  ~severity=MarkerSeverity.Error,
+                  ~message,
+                  ~startLineNumber=Loc.start_line(loc),
+                  ~startColumn=Loc.start_col(loc),
+                  ~endLineNumber=Loc.end_line(loc),
+                  ~endColumn=Loc.end_col(loc),
+                  (),
+                ),
+                ...markers^,
+              ];
+          | _ => ()
+          };
+          ();
+        });
+
+      get_monaco(
+        monaco_ref,
+        react_monaco => {
+          let model = react_monaco##editor##getModel();
+
+          monaco##editor##setModelMarkers(
+            model,
+            "refmt",
+            (markers^)->Belt.List.toArray,
+          );
+        },
+      );
+
+      None;
+    },
+    [|ntv_state.exec_msg|],
+  );
+
   /* Handling gutter status */
   React.useEffect2(
     () => {
@@ -142,25 +207,31 @@ let make = (~value, ~onChange) => {
     [|ntv_state.parse_error|],
   );
 
-  <ReactMonacoEditor
-    defaultValue=value
-    ref=monaco_ref
-    language="reason"
-    editorWillMount={monaco =>
-      monaco##languages##register(
-        MonacoEditor.Languages.languageExtensionPoint(~id="reason", ()),
-      )
-    }
-    onChange={(new_value, event) => {
-      ntv_send(
-        Editor_changed(
-          event##changes
-          ->Belt.Array.map(changes =>
-              Location.Monaco.from_monaco(changes##range)
-            ),
-        ),
-      );
-      onChange(new_value);
-    }}
-  />;
+  <>
+    <Ds.Button
+      onClick={_ => ntv_send(Execute(ntv_state.parse_success[0]##id))}>
+      "Execute all"->React.string
+    </Ds.Button>
+    <ReactMonacoEditor
+      defaultValue=value
+      ref=monaco_ref
+      language="reason"
+      editorWillMount={monaco =>
+        monaco##languages##register(
+          MonacoEditor.Languages.languageExtensionPoint(~id="reason", ()),
+        )
+      }
+      onChange={(new_value, event) => {
+        ntv_send(
+          Editor_changed(
+            event##changes
+            ->Belt.Array.map(changes =>
+                Location.Monaco.from_monaco(changes##range)
+              ),
+          ),
+        );
+        onChange(new_value);
+      }}
+    />
+  </>;
 };
