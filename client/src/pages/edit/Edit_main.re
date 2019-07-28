@@ -67,6 +67,19 @@ module S = {
       unsafe("WebkitOverflowScrolling", "touch"),
     ]
     ->style;
+
+  let frame =
+    [
+      position(`absolute),
+      top(`zero),
+      right(`zero),
+      bottom(`zero),
+      left(`zero),
+      borderStyle(`none),
+      width(`percent(100.)),
+      height(`percent(100.)),
+    ]
+    ->style;
 };
 
 let default_value = {|[@bs.deriving jsConverter]
@@ -137,7 +150,13 @@ let make = () => {
            }}
         </section>
       </div>
-      <div className=S.preview_container />
+      <div className=S.preview_container>
+        <iframe
+          className=S.frame
+          src="/container.html"
+          sandbox="allow-modals allow-scripts allow-popups allow-forms allow-same-origin"
+        />
+      </div>
     </main>
   </>;
 };
