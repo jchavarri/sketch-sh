@@ -152,6 +152,7 @@ let make = () => {
       </div>
       <div className=S.preview_container>
         <iframe
+          id="frame"
           className=S.frame
           src="/container.html"
           sandbox="allow-modals allow-scripts allow-popups allow-forms allow-same-origin"
