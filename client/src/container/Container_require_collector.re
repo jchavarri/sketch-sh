@@ -1,3 +1,4 @@
+// TODO: move this into web worker
 [@bs.module]
 external konan:
   string =>
