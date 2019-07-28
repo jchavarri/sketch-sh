@@ -67,31 +67,14 @@ type polestar_opts('globals, 'moduleThis) = {
   .
   "globals": Js.t('globals),
   "moduleThis": 'moduleThis,
-  "fetcher":
-    [@bs.meth] (
-      (string, Fetcher.meta) => Js.Promise.t(Fetcher.FetchResult.t)
-    ),
+  "fetcher": (. string, Fetcher.meta) => Js.Promise.t(Fetcher.FetchResult.t),
   "resolver": resolver,
-  "onEntry": [@bs.meth] (unit => unit),
-  "onError": [@bs.meth] (exn => unit),
+  "onEntry": (. unit) => unit,
+  "onError": (. exn) => unit,
 };
 
 [@bs.module "polestar"] [@bs.new]
 external make: polestar_opts('a, 'b) => polestar = "Polestar";
 
-[@bs.module "polestar"] external defaultResolver: resolver = "DefaultResolver";
-
-module Sketch_polestar = {
-  let globals = {
-    "process": {
-      "env": Js.Obj.empty,
-    },
-  };
-
-  type protocol =
-    | Npm
-    | Vfs
-    | Annonymous;
-  // let parse
-  let fetcher = (url, meta) => {};
-};
+[@bs.module "polestar"] [@bs.new]
+external defaultResolver: resolver = "DefaultResolver";

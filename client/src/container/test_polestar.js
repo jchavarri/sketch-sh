@@ -23,7 +23,6 @@ let polestar = new Polestar({
 'use strict';
 
 var Js_mapperRt = require(\"./stdlib/js_mapperRt.js\");
-var foo = require("./foo.js")
 
 var jsMapperConstantArray = /* array */[
   1,
@@ -61,7 +60,7 @@ exports.a = a;
       return {
         url: url,
         id: url,
-        dependencies: ["./foo.js"],
+        dependencies:[],
         code,
       };
     }
@@ -77,7 +76,8 @@ exports.a = a;
 });
 
 async function main() {
-  let indexModule = await polestar.require("vfs:///index.js");
+  let indexModule = await polestar.require("react");
+  console.log(indexModule);
 }
 
 main();

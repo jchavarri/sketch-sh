@@ -3072,10 +3072,10 @@ bs-platform@^5.0.6:
   resolved "https://registry.npmjs.org/bs-platform/-/bs-platform-5.0.6.tgz#88c13041fb020479800de3d82c680bf971091425"
   integrity sha512-6Boa2VEcWJp2WJr38L7bp3J929nYha7gDarjxb070jWzgfPJ/WbzjipmSfnu2eqqk1MfjEIpBipbPz6n1NISwA==
 
-bs-webapi@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.npmjs.org/bs-webapi/-/bs-webapi-0.10.0.tgz#2fd08783c1bf184817a7dd37f457ddd5449eb6fc"
-  integrity sha512-CnEwtcN89JjsJQcaTRqkuHFGFrWka21miEvZPgbnmmDox1XYcrtXgsRD5S1EM3002F88BgX4Ek0kGHPOq6COQA==
+bs-webapi@^0.15.2:
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/bs-webapi/-/bs-webapi-0.15.2.tgz#0bf4174cffafde748df19c4ae42f6e8e6c6a22b1"
+  integrity sha512-P3YNG9i29FjGxBLN4UkhiQpBwB4ok+xiGK6kCiUixBB/mb/hwnFGPbxAY/Q2owx0/8ehM+BwRT6vFd01T0GRRQ==
 
 bser@^2.0.0:
   version "2.1.0"
@@ -3623,10 +3623,15 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror@^5.35.0, codemirror@^5.39.2, codemirror@^5.46.0:
+codemirror@^5.35.0, codemirror@^5.46.0:
   version "5.48.0"
   resolved "https://registry.npmjs.org/codemirror/-/codemirror-5.48.0.tgz#66e6dae6ca79b955e34b322881ebb7b5512f3cc5"
   integrity sha512-3Ter+tYtRlTNtxtYdYNPxGxBL/b3cMcvPdPm70gvmcOO2Rauv/fUEewWa0tT596Hosv6ea2mtpx28OXBy1mQCg==
+
+codemirror@^5.39.2:
+  version "5.48.2"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.48.2.tgz#a9dd3d426dea4cd59efd59cd98e20a9152a30922"
+  integrity sha512-i9VsmC8AfA5ji6EDIZ+aoSe4vt9FcwPLdHB1k1ItFbVyuOFRrcfvnoKqwZlC7EVA2UmTRiNEypE4Uo7YvzVY8Q==
 
 codesandbox-api@^0.0.19:
   version "0.0.19"
@@ -10929,7 +10934,7 @@ react-codemirror2@^4.0.1:
 
 react-codemirror2@^6.0.0:
   version "6.0.0"
-  resolved "https://registry.npmjs.org/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
+  resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
   integrity sha512-D7y9qZ05FbUh9blqECaJMdDwKluQiO3A9xB+fssd5jKM7YAXucRuEOlX32mJQumUvHUkHRHqXIPBjm6g0FW0Ag==
 
 react-content-loader@^3.1.2:
