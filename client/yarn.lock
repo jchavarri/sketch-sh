@@ -1581,6 +1581,11 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/semver@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
+  integrity sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==
+
 "@types/shelljs@^0.8.0":
   version "0.8.5"
   resolved "https://registry.npmjs.org/@types/shelljs/-/shelljs-0.8.5.tgz#1e507b2f6d1f893269bd3e851ec24419ef9beeea"
@@ -2709,7 +2714,7 @@ babel-template@^6.16.0:
     babylon "^6.18.0"
     lodash "^4.17.4"
 
-babel-traverse@^6.18.0, babel-traverse@^6.26.0:
+babel-traverse@^6.18.0, babel-traverse@^6.23.1, babel-traverse@^6.26.0:
   version "6.26.0"
   resolved "https://registry.npmjs.org/babel-traverse/-/babel-traverse-6.26.0.tgz#46a9cbd7edcc62c8e5c064e2d2d8d0f4035766ee"
   integrity sha1-RqnL1+3MYsjlwGTi0tjQ9ANXZu4=
@@ -2734,7 +2739,7 @@ babel-types@^6.18.0, babel-types@^6.26.0:
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
 
-babylon@^6.18.0:
+babylon@^6.15.0, babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.npmjs.org/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
@@ -7988,6 +7993,14 @@ kleur@^3.0.2:
   resolved "https://registry.npmjs.org/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+konan@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/konan/-/konan-1.2.1.tgz#51cdc2e7c6f500d8217cc8976303521733a43b57"
+  integrity sha512-aLJDxX96Cqq1rC39AP3H7bTh8GV5ByU0KPsPKKagME8ElixRIrGd+LFxKBiCbSmHDTb+c6lkjDZhYXzm5fDtHQ==
+  dependencies:
+    babel-traverse "^6.23.1"
+    babylon "^6.15.0"
+
 last-call-webpack-plugin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/last-call-webpack-plugin/-/last-call-webpack-plugin-3.0.0.tgz#9742df0e10e3cf46e5c0381c2de90d3a7a2d7555"
@@ -9915,6 +9928,14 @@ pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
   integrity sha512-2qHaIQr2VLRFoxe2nASzsV6ef4yOOH+Fi9FBOVH6cqeSgUnoyySPZkxzLuzd+RYOQTRpROA0ztTMqxROKSb/nA==
+
+polestar@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/polestar/-/polestar-0.1.2.tgz#dde837d4d14ace9faa6d136e18e42d8fd9b6a421"
+  integrity sha512-wb1P6VSkp9653OCEHvtxN+r3ulooptC7cJCaNyzbJi5h6UJOnbXgxbLywBQPL+3yxH7yP3cwWNJIKJRGX41+2A==
+  dependencies:
+    "@types/semver" "^5.5.0"
+    semver "^5.6.0"
 
 polished@^3.3.0:
   version "3.4.1"

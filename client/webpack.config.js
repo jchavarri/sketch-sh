@@ -6,7 +6,7 @@ const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+// const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 const postcssPresetEnv = require("postcss-preset-env");
 const postcssNormalize = require("postcss-normalize");
@@ -53,7 +53,7 @@ const base = {
       filename: isProd ? "[name].[contenthash].css" : "[name].css",
       chunkFilename: isProd ? "[id].[contenthash].css" : "[id].css",
     }),
-    new MonacoWebpackPlugin(),
+    // new MonacoWebpackPlugin(),
   ],
   optimization: {
     minimizer: [
@@ -117,7 +117,10 @@ const base = {
 };
 
 if (!isProd) {
-  base.plugins = [...base.plugins, new webpack.HotModuleReplacementPlugin()];
+  base.plugins = [
+    ...base.plugins,
+    // new webpack.HotModuleReplacementPlugin()
+  ];
 }
 
 if (process.env.ANALYZE) {
